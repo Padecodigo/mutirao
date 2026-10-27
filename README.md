@@ -126,15 +126,22 @@ Calma, você não precisa entender essa árvore. Ela existe para a IA não se pe
 Tudo o que está acontecendo tem um lugar para ser visto:
 
 ```bash
-./mutirao board          # gera o quadro e abre no navegador
-./mutirao board --watch  # atualiza sozinho a cada 5 segundos
+./mutirao board          # gera o quadro e abre no navegador (estático)
+./mutirao board --serve  # interativo: arraste os cartões, grava no tasks.md
+./mutirao board --watch  # estático, atualizando sozinho a cada 5 segundos
 ```
 
 ![Quadro do Mutirão](docs/board.png)
 
-A página é **um arquivo só**: sem servidor, sem internet, sem login. Ela lê o
+A página é **um arquivo só**: sem internet, sem login. Ela lê o
 `.specify/specs/*/tasks.md` e as worktrees dos agentes — ou seja, mostra o
 estado real do projeto, não uma lista que alguém esqueceu de atualizar.
+
+No modo `--serve`, arrastar um cartão grava a marca no `tasks.md` na hora, e o
+botão **copiar pedido** entrega o comando pronto para colar no chat da IA.
+Rodar isso é um processo local (python3 da biblioteca padrão), escutando só em
+`127.0.0.1`. Sem python3 na máquina, o Mutirão cai sozinho no modo estático —
+nada deixa de funcionar, só perde o arrastar.
 
 Para o quadro saber o andamento, as tarefas usam três marcas:
 

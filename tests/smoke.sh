@@ -376,6 +376,61 @@ done
 expect_ok "gera quadro em projeto sem tarefas" \
   run_in "$KIT" ./mutirao board --no-open --out "$TMPROOT/vazio.html"
 
+# ========================================================== 10. board interativo
+section "board interativo (--serve)"
+
+if command -v python3 >/dev/null 2>&1 && command -v curl >/dev/null 2>&1; then
+  R5="$(new_repo "$TMPROOT/serve")"
+  mkdir -p "$R5/.specify/specs/001-teste"
+  printf '# Spec · Teste\n' > "$R5/.specify/specs/001-teste/spec.md"
+  printf -- '- [ ] **T1** · backend · tarefa de teste\n' \
+    > "$R5/.specify/specs/001-teste/tasks.md"
+
+  PORTA=$((18000 + RANDOM % 900))
+  run_in "$R5" "$KIT/tools/board.sh" --serve --no-open --port "$PORTA" \
+    >"$TMPROOT/srv.log" 2>&1 &
+  SRV=$!
+
+  subiu=0
+  for _ in $(seq 1 40); do
+    if curl -fsS "http://127.0.0.1:$PORTA/api/ping" >/dev/null 2>&1; then subiu=1; break; fi
+    sleep 0.25
+  done
+
+  if (( subiu == 1 )); then ok "servidor responde"; else bad "servidor responde"; fi
+
+  if curl -fsS "http://127.0.0.1:$PORTA/" 2>/dev/null | grep -q 'draggable="true"'; then
+    ok "página interativa tem cartão arrastável"
+  else
+    bad "página interativa tem cartão arrastável"
+  fi
+
+  curl -sS -X POST "http://127.0.0.1:$PORTA/api/task" \
+    -H 'Content-Type: application/json' \
+    -d '{"arquivo":".specify/specs/001-teste/tasks.md","tarefa":"T1","estado":">"}' \
+    >/dev/null 2>&1
+
+  if grep -q -- '- \[>\] \*\*T1\*\*' "$R5/.specify/specs/001-teste/tasks.md"; then
+    ok "arrastar grava no tasks.md"
+  else
+    bad "arrastar grava no tasks.md"
+  fi
+
+  CODIGO="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "http://127.0.0.1:$PORTA/api/task" \
+    -H 'Content-Type: application/json' \
+    -d '{"arquivo":"../../etc/passwd","tarefa":"T1","estado":"x"}' 2>/dev/null || true)"
+  if [[ "$CODIGO" == "400" ]]; then
+    ok "recusa caminho fora do projeto"
+  else
+    bad "recusa caminho fora do projeto (status $CODIGO)"
+  fi
+
+  kill "$SRV" 2>/dev/null
+  wait "$SRV" 2>/dev/null
+else
+  printf '  - python3 ou curl ausente: teste do --serve ignorado\n'
+fi
+
 # ================================================================ resultado
 printf '\n'
 if (( FAIL == 0 )); then

@@ -17,7 +17,7 @@ USO
 COMANDOS
   init <pasta>        Cria um projeto novo a partir do kit.
   start "<ideia>"     Gera o prompt inicial do Maestro para colar no chat.
-  board               Abre o quadro visual (a fazer · fazendo · concluído).
+  board               Abre o quadro visual (--serve para arrastar cartões).
   gate                Mostra os 4 portões humanos e quando você será chamado.
   doctor              Verifica se o computador tem tudo o que é preciso.
   worktree <ação>     Áreas de trabalho paralelas (uma por agente).

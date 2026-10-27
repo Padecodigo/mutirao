@@ -11,12 +11,16 @@ OUT="$ROOT/.mutirao/board/index.html"
 OPEN=1
 REFRESH=0
 WATCH=0
+SERVE=0
+PORT=8787
 
 usage() {
   cat <<'EOF'
 uso: mutirao board [opções]
 
   (sem opção)     Gera o quadro e abre no navegador
+  --serve         Quadro interativo: arrastar cartão grava no tasks.md
+  --port <n>      Porta do --serve (padrão 8787)
   --no-open       Gera sem abrir
   --out <arquivo> Gera em outro caminho
   --watch         Gera, abre e atualiza sozinho a cada 5 segundos
@@ -38,12 +42,25 @@ while [[ $# -gt 0 ]]; do
     --out) OUT="${2:-}"; shift 2 ;;
     --watch) WATCH=1; REFRESH=1; shift ;;
     --refresh) REFRESH=1; shift ;;
+    --serve) SERVE=1; shift ;;
+    --port) PORT="${2:-}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) die "opção desconhecida: $1" ;;
   esac
 done
 
 [[ -n "$OUT" ]] || die "--out precisa de um caminho"
+
+INTERACTIVE="${MUTIRAO_BOARD_INTERACTIVE:-0}"
+
+if (( SERVE == 1 )); then
+  have python3 || die "o modo interativo precisa de python3. Sem ele, use: mutirao board"
+  [[ -f "$SELF_DIR/board_server.py" ]] || die "tools/board_server.py não encontrado"
+  [[ -n "$PORT" ]] || die "--port precisa de um número"
+  servidor_args=(--root "$ROOT" --renderer "$SELF_DIR/board.sh" --port "$PORT")
+  (( OPEN == 1 )) || servidor_args+=(--no-open)
+  exec python3 "$SELF_DIR/board_server.py" "${servidor_args[@]}"
+fi
 
 # ---------------------------------------------------------------- utilidades
 
@@ -183,6 +200,13 @@ render() {
   .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
   .dot.on{background:var(--doing)} .dot.off{background:var(--todo)}
   footer{max-width:1200px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12px}
+  .card[draggable="true"]{cursor:grab}
+  .card.dragging{opacity:.45}
+  .col.over{outline:2px dashed var(--accent);outline-offset:6px;border-radius:14px}
+  button.copy{margin-top:10px;font:inherit;font-size:11px;color:var(--muted);
+              background:transparent;border:1px solid var(--line);border-radius:999px;
+              padding:3px 10px;cursor:pointer}
+  button.copy:hover{color:var(--ink);border-color:var(--muted)}
   @media (max-width:900px){
     main{grid-template-columns:1fr}
     .board{grid-template-columns:1fr}
@@ -204,7 +228,14 @@ CSS
     local -a col_titles=('A fazer' 'Fazendo agora' 'Concluído')
     local c
     for c in 0 1 2; do
-      printf '<section class="col %s">\n<h2>%s</h2>\n' "${col_keys[$c]}" "${col_titles[$c]}"
+      local estado_col
+      case "${col_keys[$c]}" in
+        todo)  estado_col=" " ;;
+        doing) estado_col=">" ;;
+        done)  estado_col="x" ;;
+      esac
+      printf '<section class="col %s" data-estado="%s">\n<h2>%s</h2>\n' \
+        "${col_keys[$c]}" "$estado_col" "${col_titles[$c]}"
       local printed=0
       for i in "${!t_id[@]}"; do
         local match=0
@@ -217,11 +248,20 @@ CSS
         printed=1
         local role_lc
         role_lc="$(printf '%s' "${t_role[$i]}" | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
-        printf '<article class="card">\n<div class="top">'
+        local arrastavel="false"
+        (( INTERACTIVE == 1 )) && arrastavel="true"
+        printf '<article class="card" draggable="%s" data-task="%s" data-file="%s">\n<div class="top">' \
+          "$arrastavel" "$(html_escape "${t_id[$i]}")" \
+          "$(html_escape ".specify/specs/${t_spec[$i]}/tasks.md")"
         printf '<span class="id">%s</span>' "$(html_escape "${t_id[$i]}")"
         printf '<span class="role %s">%s</span>' "$(html_escape "$role_lc")" "$(html_escape "${t_role[$i]}")"
         printf '<span class="spec">%s</span>' "$(html_escape "${t_spec[$i]}")"
-        printf '</div>\n<p>%s</p>\n</article>\n' "$(html_escape "${t_text[$i]}")"
+        printf '</div>\n<p>%s</p>\n' "$(html_escape "${t_text[$i]}")"
+        local pedido
+        pedido="Continue a tarefa ${t_id[$i]} do projeto: ${t_text[$i]}. Leia AGENTS.md, a spec e os contratos antes de mexer. Ao começar, marque [>] em ${t_id[$i]} no tasks.md; ao terminar e testar, marque [x]."
+        printf '<button class="copy" type="button" data-pedido="%s">copiar pedido</button>\n' \
+          "$(html_escape "$pedido")"
+        printf '</article>\n'
       done
       if (( printed == 0 )); then
         case "${col_keys[$c]}" in
@@ -296,6 +336,88 @@ GATES
     printf '</aside>\n</main>\n'
     printf '<footer>Gerado por <code>mutirao board</code> · %s · regras em AGENTS.md</footer>\n' \
       "$(html_escape "$(git -C "$ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?')")"
+    if (( INTERACTIVE == 1 )); then
+      cat <<'SCRIPT'
+<script>
+(function () {
+  var arrastando = null;
+
+  document.querySelectorAll('article.card[draggable="true"]').forEach(function (card) {
+    card.addEventListener('dragstart', function (e) {
+      arrastando = card;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.task || '');
+    });
+    card.addEventListener('dragend', function () {
+      card.classList.remove('dragging');
+      arrastando = null;
+    });
+  });
+
+  document.querySelectorAll('section.col').forEach(function (col) {
+    col.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      col.classList.add('over');
+    });
+    col.addEventListener('dragleave', function () { col.classList.remove('over'); });
+    col.addEventListener('drop', function (e) {
+      e.preventDefault();
+      col.classList.remove('over');
+      if (!arrastando) return;
+      var corpo = JSON.stringify({
+        arquivo: arrastando.dataset.file,
+        tarefa: arrastando.dataset.task,
+        estado: col.dataset.estado
+      });
+      fetch('/api/task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: corpo
+      }).catch(function () {}).then(function () { location.reload(); });
+    });
+  });
+
+  setInterval(function () {
+    if (!arrastando && !document.hidden) location.reload();
+  }, 5000);
+})();
+</script>
+SCRIPT
+    else
+      cat <<'SCRIPT'
+<script>
+(function () {
+  document.querySelectorAll('button.copy').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var texto = btn.dataset.pedido || '';
+      function done() {
+        var antes = btn.textContent;
+        btn.textContent = 'copiado';
+        setTimeout(function () { btn.textContent = antes; }, 1200);
+      }
+      function reserva() {
+        var ta = document.createElement('textarea');
+        ta.value = texto;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (err) {}
+        document.body.removeChild(ta);
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto).then(done, reserva);
+      } else {
+        reserva();
+      }
+    });
+  });
+})();
+</script>
+SCRIPT
+    fi
+
     printf '</body>\n</html>\n'
   } > "$OUT"
 }

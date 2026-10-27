@@ -19,6 +19,9 @@ jobs:
       - name: Sintaxe e testes
         run: bash tests/smoke.sh
 
+      - name: Sintaxe do servidor do quadro
+        run: python3 -m py_compile tools/board_server.py
+
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest
@@ -54,7 +57,8 @@ jobs:
       - name: Estrutura mínima
         run: |
           set -e
-          for f in AGENTS.md README.md LICENSE .agents/maestro.md \
+          for f in AGENTS.md START.md README.md LICENSE llms.txt \
+                   tools/board_server.py .agents/maestro.md \
                    .agents/gates.md .specify/memory/constitution.md \
                    examples/doceria/spec.md docs/como-comecar.md; do
             test -f "$f" || { echo "faltando: $f"; exit 1; }

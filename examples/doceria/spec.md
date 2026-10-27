@@ -67,14 +67,13 @@ e total. Confere e responde confirmando.
 ## Regras do negócio
 
 - Pedido mínimo: R$ 30,00
-- Entrega apenas na cidade de **São Paulo – SP**, nos bairros: Centro, Jardim América, Vila Nova — taxa R$ 8,00
+- Entrega só nos bairros: Centro, Jardim América, Vila Nova — taxa R$ 8,00
 - Encomendas para o dia seguinte precisam ser feitas até 18h
 - Bolo inteiro exige 24h de antecedência (aviso na tela)
 
 ## Conteúdo e identidade
 
 - Nome: Doceria da Ana
-- Cidade: **São Paulo – SP** (aparece no rodapé da home e na mensagem do WhatsApp)
 - Cores: rosa queimado (#B5654A) e creme (#FBF6F0)
 - Textos prontos: não — usar exemplo e a Ana troca depois
 - Fotos: sim, 6 fotos enviadas por ela

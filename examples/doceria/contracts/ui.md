@@ -11,10 +11,8 @@
 |---|---|
 | lista de produtos | `GET /api/produtos` |
 
-Mostra: nome da doceria, uma frase de apresentação, cidade no rodapé, grade de
-produtos (foto, nome, preço, botão "adicionar").
-
-Rodapé fixo: `Doceria da Ana · São Paulo – SP · entrega de terça a sábado`.
+Mostra: nome da doceria, uma frase de apresentação, grade de produtos (foto,
+nome, preço, botão "adicionar").
 
 Estados:
 - carregando: esqueleto com 3 blocos

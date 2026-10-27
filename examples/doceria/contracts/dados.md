@@ -29,7 +29,7 @@
 | `nome_cliente` | texto (até 80) | sim | |
 | `telefone` | texto | sim | 10 ou 11 dígitos, com DDD |
 | `bairro` | texto | sim | um dos bairros atendidos |
-| `endereco` | texto (até 160) | sim | rua e número (a cidade é sempre São Paulo/SP) |
+| `endereco` | texto (até 160) | sim | rua e número |
 | `itens` | lista de ItemPedido | sim | mínimo 1 |
 | `total_centavos` | inteiro | calculado no servidor | nunca confiar no cliente |
 | `status` | texto | gerado | `novo` · `confirmado` · `entregue` · `apagado` |

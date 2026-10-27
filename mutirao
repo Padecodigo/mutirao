@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+# mutirao — vibe coding em mutirão para quem nunca programou.
+# Ponto de entrada único: `./mutirao <comando>`.
+set -euo pipefail
+
+SELF_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck source=tools/lib/common.sh
+source "$SELF_DIR/tools/lib/common.sh"
+
+usage() {
+  cat <<'EOF'
+mutirao — vibe coding em mutirão para quem nunca programou
+
+USO
+  ./mutirao <comando> [opções]
+
+COMANDOS
+  init <pasta>        Cria um projeto novo a partir do kit.
+  start "<ideia>"     Gera o prompt inicial do Maestro para colar no chat.
+  gate                Mostra os 4 portões humanos e quando você será chamado.
+  doctor              Verifica se o computador tem tudo o que é preciso.
+  worktree <ação>     Áreas de trabalho paralelas (uma por agente).
+  vault <ação>        Cofre de senhas e chaves (nunca no repositório).
+  guard <ação>        Verifica se algum segredo escapou para o código.
+  help                Esta ajuda.
+  version             Versão do kit.
+
+EXEMPLOS
+  ./mutirao doctor
+  ./mutirao init ~/projetos/doceria
+  ./mutirao start "site de doceria que recebe pedido no WhatsApp"
+  ./mutirao worktree new frontend
+  ./mutirao vault run -- npm run dev
+
+Documentação: docs/como-comecar.md
+EOF
+}
+
+cmd_start() {
+  local idea="${1:-}"
+  if [[ -z "$idea" ]]; then
+    die 'uso: ./mutirao start "descreva o que você quer construir"'
+  fi
+
+  local root
+  root="$(repo_root)" || root="$SELF_DIR"
+
+  info ""
+  info "${C_BOLD}Cole o texto abaixo no chat da sua IA (Claude, Codex, Gemini, Cursor…).${C_RESET}"
+  info "${C_DIM}É o seu pedido de abertura. O Maestro assume daqui.${C_RESET}"
+  info ""
+  printf -- '------------------------------------------------------------------------\n'
+  cat <<EOF
+Leia o arquivo AGENTS.md deste projeto e siga a constituição do Mutirão.
+Você é o Maestro. A pessoa com quem você fala não programa.
+
+O que ela quer construir:
+  "$idea"
+
+Comece pelo Portão 0: faça no máximo 5 perguntas curtas, em português simples,
+sem termos técnicos, e espere as respostas. Depois escreva a spec em
+.specify/specs/001-<nome>/spec.md e me mostre para aprovação.
+
+Não crie contas, não pague nada e não use nenhuma chave ainda.
+Projeto: $root
+EOF
+  printf -- '------------------------------------------------------------------------\n'
+  info ""
+  dim "Depois disso, o trabalho acontece todo por conversa."
+}
+
+cmd_gate() {
+  cat <<'EOF'
+Os 4 portões do Mutirão
+=======================
+
+A IA faz tudo sozinha, EXCETO nestes 4 momentos. Aqui ela para e chama você.
+São os únicos pontos em que a sua presença é obrigatória.
+
+  ┌───┬────────────────────┬──────────────────────────────────────────────┐
+  │ 1 │ Criar conta        │ Você resolve CAPTCHA, código por SMS e aceita │
+  │   │                    │ os termos. A IA já deixou tudo preenchido.   │
+  ├───┼────────────────────┼──────────────────────────────────────────────┤
+  │ 2 │ Pagar              │ Você paga no site do serviço. A IA abre o    │
+  │   │                    │ checkout e confere depois se funcionou.      │
+  ├───┼────────────────────┼──────────────────────────────────────────────┤
+  │ 3 │ Publicar (deploy)  │ Você aprova colocar o site no ar. A IA já    │
+  │   │                    │ testou tudo antes de pedir.                  │
+  ├───┼────────────────────┼──────────────────────────────────────────────┤
+  │ 4 │ Trocar uma chave   │ Você confirma a troca de uma senha/chave.    │
+  │   │                    │ A IA faz o resto.                            │
+  └───┴────────────────────┴──────────────────────────────────────────────┘
+
+Por que esses e não outros:
+  • Contas e pagamentos são atos seus por lei e pelos termos dos serviços.
+    Automação aí derruba a conta e pode ser fraude.
+  • Deploy é o momento em que o mundo passa a ver o seu projeto.
+  • Trocar chave mexe no cofre; queremos você sabendo.
+
+Fora desses 4 momentos: você pede, a IA executa.
+EOF
+}
+
+cmd_doctor() {
+  local root missing=0
+  root="$(repo_root 2>/dev/null || true)"
+
+  title "Mutirão · verificação do ambiente"
+
+  _check() {
+    local label="$1" cmd="$2" hint="$3" optional="${4:-}"
+    if have "$cmd"; then
+      ok "$label"
+    elif [[ "$optional" == "opcional" ]]; then
+      dim "– $label (opcional, não instalado)"
+    else
+      fail "$label — instale: $hint"
+      missing=$((missing + 1))
+    fi
+  }
+
+  _check "git" git "https://git-scm.com/downloads"
+  _check "bash 4+" bash "https://www.gnu.org/software/bash/"
+
+  if [[ -n "$root" ]]; then
+    ok "projeto git: $root"
+  else
+    warn "nenhum projeto git aqui — rode dentro da pasta do seu projeto, ou 'git init'"
+  fi
+
+  _check "gh (GitHub CLI)" gh "https://cli.github.com" opcional
+  _check "node (para muitos projetos web)" node "https://nodejs.org" opcional
+  _check "python3" python3 "https://python.org" opcional
+  _check "gitleaks (varredura extra de segredos)" gitleaks "https://github.com/gitleaks/gitleaks" opcional
+  _check "shellcheck (só para contribuir)" shellcheck "https://www.shellcheck.net" opcional
+
+  if [[ -x "$SELF_DIR/tools/vault.sh" ]]; then
+    "$SELF_DIR/tools/vault.sh" doctor || true
+  fi
+
+  info ""
+  if (( missing > 0 )); then
+    warn "$missing item(ns) obrigatório(s) faltando. Resolva antes de continuar."
+    return 1
+  fi
+  ok "Tudo pronto para começar."
+}
+
+cmd="${1:-help}"
+[[ $# -gt 0 ]] && shift
+
+case "$cmd" in
+  help|-h|--help) usage ;;
+  version|-v|--version) printf 'mutirao %s\n' "$MUTIRAO_VERSION" ;;
+  start) cmd_start "$@" ;;
+  gate) cmd_gate ;;
+  doctor) cmd_doctor ;;
+  init)
+    exec "$SELF_DIR/tools/init.sh" "$@"
+    ;;
+  worktree)
+    exec "$SELF_DIR/tools/worktree.sh" "$@"
+    ;;
+  vault)
+    exec "$SELF_DIR/tools/vault.sh" "$@"
+    ;;
+  guard)
+    exec "$SELF_DIR/tools/guard.sh" "$@"
+    ;;
+  *)
+    fail "comando desconhecido: $cmd"
+    info ""
+    usage
+    exit 2
+    ;;
+esac

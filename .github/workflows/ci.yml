@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    name: Testes do kit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sintaxe e testes
+        run: bash tests/smoke.sh
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rodar shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -yqq shellcheck
+          shellcheck --version
+          shellcheck -x mutirao tools/*.sh tools/lib/*.sh tests/*.sh
+
+  segredos:
+    name: Nenhum segredo no repositório
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Varredura do próprio kit
+        run: |
+          chmod +x mutirao tools/*.sh
+          ./mutirao guard scan
+
+  links:
+    name: Links e estrutura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Estrutura mínima
+        run: |
+          set -e
+          for f in AGENTS.md README.md LICENSE .agents/maestro.md \
+                   .agents/gates.md .specify/memory/constitution.md \
+                   examples/doceria/spec.md docs/como-comecar.md; do
+            test -f "$f" || { echo "faltando: $f"; exit 1; }
+          done
+          echo "estrutura ok"

@@ -1,0 +1,43 @@
+# Segredos — nunca versionar
+.env
+.env.*
+!.env.example
+.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+id_rsa
+id_ed25519
+secrets/
+credentials.json
+
+# Estado local do Mutirão (cofre local, worktrees, config)
+.mutirao/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node / build
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+*.log
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editores
+.vscode/
+.idea/
+*.swp

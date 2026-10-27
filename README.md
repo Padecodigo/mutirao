@@ -104,6 +104,20 @@ Calma, você não precisa entender essa árvore. Ela existe para a IA não se pe
 
 ---
 
+## Documentação
+
+| Guia | Para quê |
+|---|---|
+| [Como começar](docs/como-comecar.md) | do zero absoluto ao primeiro projeto, sem pressupor nada |
+| [Como funciona](docs/como-funciona-o-mutirao.md) | a equipe, os portões, por que paralelo não é bagunça |
+| [Dicionário](docs/o-que-e-api.md) | as palavras que você vai ouvir, explicadas |
+| [Contas e pagamentos](docs/contas-e-pagamentos.md) | os serviços que aparecem e o que só você pode fazer |
+| [Segurança e cofre](docs/seguranca-e-cofre.md) | onde ficam as chaves e o que fazer se vazar |
+| [Perguntas frequentes](docs/perguntas-frequentes.md) | dúvidas rápidas |
+| [Exemplo completo](examples/doceria/README.md) | uma doceria, da conversa à entrega |
+
+---
+
 ## Segurança em uma linha
 
 Chave no cofre, nome no projeto, valor só na memória do processo — e um hook que

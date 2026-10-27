@@ -144,4 +144,5 @@ Fora isso, você só conversa.
 | Perdi o que fiz | `git status` mostra o que mudou; peça para a IA desfazer o último passo |
 | Não sei o que a IA fez | peça: "me explica em 3 frases, sem termo técnico" |
 
-Mais: [perguntas-frequentes.md](perguntas-frequentes.md)
+Mais: [perguntas-frequentes.md](perguntas-frequentes.md) ·
+[dicionário das palavras](o-que-e-api.md)

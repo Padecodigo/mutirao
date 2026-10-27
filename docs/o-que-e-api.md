@@ -98,3 +98,7 @@ Se a IA disser uma palavra destas e você não entender, responda simplesmente:
 > "Não entendi. Me explica como se eu tivesse 10 anos."
 
 Ela foi instruída a fazer isso. Não é vergonha — é o trabalho dela.
+
+---
+
+Voltar para: [como começar](como-comecar.md) · [como funciona o mutirão](como-funciona-o-mutirao.md)

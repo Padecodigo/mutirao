@@ -203,3 +203,14 @@ Segurança: [SECURITY.md](SECURITY.md).
 ## Licença
 
 MIT — use, copie, venda, adapte. Veja [LICENSE](LICENSE).
+
+**O que você constrói com o Mutirão é seu, inteiro.** Sem royalty, sem
+participação, sem licença sobre o resultado. O kit é ferramenta, não sócio:
+pode vender o projeto, fechar o código ou abrir — sem pedir nada a ninguém.
+
+Escolhemos MIT de propósito por dois motivos. Primeiro, quem usa não pode ficar
+preso: uma licença restritiva no repositório apareceria na auditoria de quem
+compra o negócio e desvalorizaria a venda. Segundo, um método só vale se
+circular — a alternativa (cobrar percentual do faturamento do usuário) não é
+exequível contra quem não tem advogado, e espantaria exatamente o público que o
+projeto atende.

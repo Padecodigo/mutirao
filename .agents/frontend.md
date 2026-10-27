@@ -49,5 +49,6 @@ Toda tela que você entrega tem:
 - [ ] Envia e recebe dados no formato do contrato
 - [ ] Nenhuma chave no código
 - [ ] Você abriu e clicou em tudo, de verdade
+- [ ] Tarefa marcada `[>]` ao começar e `[x]` ao terminar
 
 Relate ao Maestro com uma frase de efeito, não com lista de arquivos.

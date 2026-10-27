@@ -44,5 +44,6 @@ Trabalhe sempre na sua worktree (`mutirao worktree new backend`).
 - [ ] Migration roda em banco limpo
 - [ ] Nenhuma chave no código nem no log
 - [ ] `mutirao guard staged` limpo
+- [ ] Tarefa marcada `[>]` ao começar e `[x]` ao terminar
 
 Relate ao Maestro com o que agora é possível fazer, não com a lista de arquivos.

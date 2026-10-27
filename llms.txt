@@ -1,0 +1,35 @@
+# Mutirão
+
+> Kit de vibe coding em equipe para quem nunca programou: spec-driven, agentes
+> paralelos em worktrees e cofre de chaves, com 4 portões humanos (conta,
+> pagamento, deploy, chave). Tudo em português.
+
+Se uma pessoa colou este link no seu chat, comece por START.md e faça a
+pergunta de abertura antes de qualquer outra coisa.
+
+## Primeiro contato
+
+- [START.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/START.md): o que fazer quando alguém cola este link no chat (a pergunta: instalar ou desenvolver?)
+- [README.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/README.md): visão geral em uma página
+
+## Regras (leia antes de agir)
+
+- [AGENTS.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/AGENTS.md): constituição — os 4 portões, segurança, fluxo de trabalho
+- [.agents/gates.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/.agents/gates.md): texto exato de cada parada humana
+- [.agents/maestro.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/.agents/maestro.md): como conduzir a pessoa
+
+## Como começar um projeto
+
+- [docs/como-comecar.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/docs/como-comecar.md): do zero absoluto ao primeiro projeto
+- [docs/como-funciona-o-mutirao.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/docs/como-funciona-o-mutirao.md): a equipe, o paralelo, os custos
+- [docs/seguranca-e-cofre.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/docs/seguranca-e-cofre.md): onde ficam as chaves e o que fazer se vazar
+
+## Exemplo completo
+
+- [examples/doceria/](https://raw.githubusercontent.com/Padecodigo/mutirao/main/examples/doceria/README.md): uma doceria, da conversa à entrega
+
+## Opcional
+
+- [CONTRIBUTING.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/CONTRIBUTING.md): para quem quer desenvolver o próprio Mutirão
+- [docs/perguntas-frequentes.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/docs/perguntas-frequentes.md): dúvidas rápidas
+- [docs/o-que-e-api.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/docs/o-que-e-api.md): dicionário das palavras técnicas

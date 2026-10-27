@@ -130,6 +130,23 @@ Espera confirmação. Nunca imprime o valor.
    ⑦ ENTREGA   ── você testa, ela aprova, Portão 3 se for publicar
 ```
 
+### O quadro é a verdade
+
+O andamento não fica na sua cabeça nem no chat: fica no `tasks.md`, em três marcas.
+
+| Marca | Significado | Quando |
+|---|---|---|
+| `- [ ]` | a fazer | ao planejar |
+| `- [>]` | fazendo agora | ao começar (o agente marca com o próprio nome) |
+| `- [x]` | concluído | só depois de rodar o teste da tarefa |
+
+`mutirao board` abre o quadro visual (a fazer · fazendo · concluído) e mostra
+também os agentes em worktree, o estado do cofre e os 4 portões. Sempre que a
+pessoa perguntar "como está indo?", a resposta é o quadro — não um parágrafo.
+
+Nunca marque `[x]` sem ter rodado o teste da tarefa. Quadro mentiroso é pior
+que quadro nenhum.
+
 ### A regra que salva o mutirão
 
 **Contratos antes do paralelo.** Dois agentes trabalhando ao mesmo tempo sem

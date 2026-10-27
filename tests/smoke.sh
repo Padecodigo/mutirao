@@ -309,6 +309,73 @@ else
   printf '  - python3 ausente: checagem de links ignorada\n'
 fi
 
+# ============================================================== 8. primeiro contato
+section "primeiro contato (link no chat)"
+
+if [[ -f "$KIT/START.md" ]]; then
+  ok "START.md existe"
+else
+  bad "START.md existe"
+fi
+
+if grep -q "usar o Mutirão" "$KIT/START.md" 2>/dev/null; then
+  ok "START.md oferece a opção 1 (usar)"
+else
+  bad "START.md oferece a opção 1 (usar)"
+fi
+
+if grep -q "desenvolver o próprio Mutirão" "$KIT/START.md" 2>/dev/null; then
+  ok "START.md oferece a opção 2 (desenvolver)"
+else
+  bad "START.md oferece a opção 2 (desenvolver)"
+fi
+
+if grep -q "START.md" "$KIT/llms.txt" 2>/dev/null; then
+  ok "llms.txt aponta para o START.md"
+else
+  bad "llms.txt aponta para o START.md"
+fi
+
+if grep -q "START.md" "$KIT/README.md" 2>/dev/null; then
+  ok "README aponta para o START.md"
+else
+  bad "README aponta para o START.md"
+fi
+
+HELP_OUT="$(run_in "$KIT" ./mutirao help 2>/dev/null || true)"
+if grep -q "board" <<< "$HELP_OUT"; then
+  ok "help lista o comando board"
+else
+  bad "help lista o comando board"
+fi
+
+# ==================================================================== 9. board
+section "board (gestão visual)"
+
+R4="$(new_repo "$TMPROOT/board")"
+mkdir -p "$R4/.specify/specs/001-teste"
+printf '# Spec · Teste do quadro\n' > "$R4/.specify/specs/001-teste/spec.md"
+cat > "$R4/.specify/specs/001-teste/tasks.md" <<'TASKS'
+- [x] **T1** · backend · Rota pronta de verdade
+- [>] **T2** · frontend · Tela em construcao
+- [ ] **T3** · revisor · Falta conferir
+TASKS
+
+expect_ok "gera o quadro" \
+  run_in "$R4" "$KIT/tools/board.sh" --no-open --out "$R4/quadro.html"
+
+for termo in "Rota pronta de verdade" "Tela em construcao" "Falta conferir" \
+             "col todo" "col doing" "col done" "Os 4 portões"; do
+  if grep -qF "$termo" "$R4/quadro.html" 2>/dev/null; then
+    ok "quadro mostra: $termo"
+  else
+    bad "quadro mostra: $termo"
+  fi
+done
+
+expect_ok "gera quadro em projeto sem tarefas" \
+  run_in "$KIT" ./mutirao board --no-open --out "$TMPROOT/vazio.html"
+
 # ================================================================ resultado
 printf '\n'
 if (( FAIL == 0 )); then

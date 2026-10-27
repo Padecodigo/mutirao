@@ -9,6 +9,17 @@
 
 Quem: `maestro` · `frontend` · `backend` · `revisor`
 
+## Como marcar
+
+O quadro visual (`mutirao board`) lê estas marcas. Mantenha atualizado — quadro
+desatualizado engana a pessoa.
+
+| Marca | Significado |
+|---|---|
+| `- [ ]` | a fazer |
+| `- [>]` | fazendo agora (o agente marca ao começar) |
+| `- [x]` | concluído (só depois do teste da tarefa) |
+
 ## Rodada 1
 
 - [ ] **T1** · backend · Criar rota `POST /pedidos` que salva nome, telefone e itens

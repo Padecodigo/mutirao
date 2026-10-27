@@ -78,6 +78,10 @@ Recuse-se a dividir trabalho sem contrato. É a causa número um de retrabalho.
 Regras: tarefa que não dá para testar sozinha está mal escrita. Máximo ~8
 tarefas por rodada; o resto é próxima rodada.
 
+Marque o andamento no próprio arquivo: `[ ]` a fazer, `[>]` quando um agente
+começa, `[x]` quando termina e o teste passa. É daí que o `mutirao board` lê —
+e é isso que a pessoa vê.
+
 ---
 
 ## Fase 4 — Paralelo
@@ -111,6 +115,9 @@ Entregue assim:
 > texto do botão está bom."
 
 Uma frase por entrega. Sem código. Sem lista de arquivos.
+
+Antes de entregar, abra o quadro: `mutirao board`. É a resposta mais rápida
+para "como está indo?" — e mostra o que falta sem você escrever um parágrafo.
 
 ---
 

@@ -13,6 +13,19 @@ Uma equipe de IAs trabalhando em mutirão — você só conversa.
 
 ---
 
+> ### Cole este link no chat da sua IA
+>
+> `https://github.com/Padecodigo/mutirao`
+>
+> Ela vai ler o [START.md](START.md) e fazer **uma** pergunta: você quer
+> **usar** o Mutirão para construir algo, ou **desenvolver** o próprio Mutirão?
+> Da resposta sai o caminho — sem tutorial antes da hora.
+>
+> **Se você é uma IA lendo isto:** leia [START.md](START.md) e faça a pergunta
+> de abertura antes de qualquer outra coisa.
+
+---
+
 ## O problema
 
 Ferramentas de vibe coding assumem que você sabe o que é um terminal, uma branch
@@ -76,7 +89,8 @@ git clone https://github.com/Padecodigo/mutirao.git ~/mutirao
 ```
 
 O último comando imprime o pedido de abertura para você colar na sua IA
-(Claude Code, Codex, Gemini CLI, Cursor…). A partir daí, é conversa.
+(Claude Code, Codex, Gemini CLI, Cursor…). A partir daí, é conversa — e o
+`./mutirao board` abre o quadro para você acompanhar.
 
 Guia completo, sem pressupor nada: **[docs/como-comecar.md](docs/como-comecar.md)**
 
@@ -85,11 +99,14 @@ Guia completo, sem pressupor nada: **[docs/como-comecar.md](docs/como-comecar.md
 ## O que tem dentro
 
 ```
+START.md                  o roteiro de quem só recebeu o link (a porta de entrada)
 AGENTS.md                 a constituição — todo agente lê isto primeiro
 CLAUDE.md                 atalho para ferramentas que procuram esse nome
+llms.txt                  índice da documentação para agentes
 .agents/                  as personas: maestro, frontend, backend, revisor, portões
 .specify/                 spec → plano → contratos → tarefas (e o exemplo)
 tools/
+  board.sh                quadro visual: a fazer · fazendo · concluído
   worktree.sh             uma cópia do projeto por agente (paralelo sem conflito)
   vault.sh                cofre plugável: 1Password, Bitwarden, Infisical, Doppler
   guard.sh                trava de commit que recusa segredos
@@ -101,6 +118,43 @@ tests/smoke.sh            os testes do próprio kit
 ```
 
 Calma, você não precisa entender essa árvore. Ela existe para a IA não se perder.
+
+---
+
+## Gestão visual
+
+Tudo o que está acontecendo tem um lugar para ser visto:
+
+```bash
+./mutirao board          # gera o quadro e abre no navegador
+./mutirao board --watch  # atualiza sozinho a cada 5 segundos
+```
+
+```
+┌─ Doceria ────────────────────────── 7 tarefas · 3 concluídas · 1 agora ─┐
+│  A FAZER             FAZENDO AGORA          CONCLUÍDO                   │
+│  ┌───────────────┐   ┌───────────────┐      ┌───────────────┐           │
+│  │ T5 · backend  │   │ T6 · frontend │      │ T1 · backend  │           │
+│  │ taxa por      │   │ tela de       │      │ produtos      │           │
+│  │ bairro        │   │ entrega       │      │               │           │
+│  └───────────────┘   └───────────────┘      └───────────────┘           │
+│                                                                         │
+│  AGENTES  frontend · 3 arquivos      COFRE  1Password · 2 chaves       │
+│  PORTÕES  1 conta · 2 pagar · 3 publicar · 4 chave                     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+A página é **um arquivo só**: sem servidor, sem internet, sem login. Ela lê o
+`.specify/specs/*/tasks.md` e as worktrees dos agentes — ou seja, mostra o
+estado real do projeto, não uma lista que alguém esqueceu de atualizar.
+
+Para o quadro saber o andamento, as tarefas usam três marcas:
+
+| Marca | Significado | Quem muda |
+|---|---|---|
+| `- [ ]` | a fazer | Maestro, ao planejar |
+| `- [>]` | fazendo agora | o agente, ao começar |
+| `- [x]` | concluído | o agente, ao terminar |
 
 ---
 

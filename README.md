@@ -13,16 +13,23 @@ Uma equipe de IAs trabalhando em mutirão — você só conversa.
 
 ---
 
-> ### Cole este link no chat da sua IA
+> ### Cole o link no chat da sua IA
 >
-> `https://github.com/Padecodigo/mutirao`
+> Duas formas. **Com o prompt pronto** (mais previsível — o agente já vai direto
+> ao ponto):
 >
-> Ela vai ler o [START.md](START.md) e fazer **uma** pergunta: você quer
-> **usar** o Mutirão para construir algo, ou **desenvolver** o próprio Mutirão?
-> Da resposta sai o caminho — sem tutorial antes da hora.
+> ```
+> Leia o START.md de https://github.com/Padecodigo/mutirao e configure
+> este projeto com o Mutirão. Depois me pergunte o que eu quero construir.
+> ```
+>
+> **Ou só o link** — aí a IA lê o [START.md](START.md) e faz **uma** pergunta:
+> você quer **usar** o Mutirão para construir algo, ou **desenvolver** o próprio
+> Mutirão? Da resposta sai o caminho, sem tutorial antes da hora.
 >
 > **Se você é uma IA lendo isto:** leia [START.md](START.md) e faça a pergunta
-> de abertura antes de qualquer outra coisa.
+> de abertura — ou, se a pessoa já pediu "instale e configure", siga o roteiro
+> "Instale e configure" de lá.
 
 ---
 

@@ -3,6 +3,17 @@
 Este guia assume que você **nunca programou** e nunca abriu um terminal.
 Leva uns 15 minutos até a primeira conversa com a IA.
 
+> **Quer pular a parte manual?** Cole isto no chat da sua IA e ela instala e
+> configura por você:
+>
+> ```
+> Leia o START.md de https://github.com/Padecodigo/mutirao e configure
+> este projeto com o Mutirão. Depois me pergunte o que eu quero construir.
+> ```
+>
+> O resto deste guia é o caminho "faça você mesmo" — útil quando você quiser
+> entender cada passo, ou quando a IA não tiver acesso a terminal.
+
 ---
 
 ## Antes de tudo: o que você vai precisar

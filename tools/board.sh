@@ -80,9 +80,26 @@ collect_tasks() {
 
 # -------------------------------------------------------------------- render
 
+project_title() {
+  local dir t="" n=0
+  for dir in "$ROOT"/.specify/specs/*/; do
+    [[ -d "$dir" ]] && n=$((n + 1))
+  done
+  if (( n == 1 )); then
+    for dir in "$ROOT"/.specify/specs/*/; do
+      [[ -d "$dir" ]] || continue
+      if [[ -f "${dir}spec.md" ]]; then
+        t="$(sed -n 's/^#[[:space:]]*Spec[[:space:]]*·[[:space:]]*//p' "${dir}spec.md" | head -n 1)"
+      fi
+    done
+  fi
+  [[ -n "$t" ]] || t="$(basename -- "$ROOT")"
+  printf '%s' "$t"
+}
+
 render() {
   local proj
-  proj="$(basename -- "$ROOT")"
+  proj="$(project_title)"
 
   local -a t_id=() t_role=() t_text=() t_st=() t_spec=()
   local id role text st spec
@@ -158,7 +175,9 @@ render() {
   .panel ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted)}
   .panel li{margin:4px 0}
   .agent{display:flex;justify-content:space-between;gap:8px;font-size:13px;
-         padding:6px 0;border-bottom:1px dashed var(--line)}
+         padding:6px 0;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+  .hint{font-size:11px;color:var(--muted);margin:2px 0 8px}
+  .panel code{overflow-wrap:anywhere}
   .agent:last-child{border-bottom:0}
   .agent code{font-size:12px;color:var(--muted)}
   .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
@@ -229,9 +248,9 @@ CSS
       name="$(basename -- "$dir")"
       branch="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?')"
       dirty="$(git -C "$dir" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
-      printf '<div class="agent"><span><span class="dot on"></span>%s</span><code>%s alterado(s)</code></div>\n' \
+      printf '<div class="agent"><span><span class="dot on"></span>%s</span><code>%s arq.</code></div>\n' \
         "$(html_escape "$name")" "$dirty"
-      printf '<div class="agent" style="border:0;padding-top:0"><code>%s</code></div>\n' "$(html_escape "$branch")"
+      printf '<div class="hint"><code>%s</code></div>\n' "$(html_escape "$branch")"
     done
     if (( any == 0 )); then
       printf '<div class="agent"><span><span class="dot off"></span>nenhum</span><code>mutirao worktree new &lt;nome&gt;</code></div>\n'

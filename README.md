@@ -130,19 +130,7 @@ Tudo o que está acontecendo tem um lugar para ser visto:
 ./mutirao board --watch  # atualiza sozinho a cada 5 segundos
 ```
 
-```
-┌─ Doceria ────────────────────────── 7 tarefas · 3 concluídas · 1 agora ─┐
-│  A FAZER             FAZENDO AGORA          CONCLUÍDO                   │
-│  ┌───────────────┐   ┌───────────────┐      ┌───────────────┐           │
-│  │ T5 · backend  │   │ T6 · frontend │      │ T1 · backend  │           │
-│  │ taxa por      │   │ tela de       │      │ produtos      │           │
-│  │ bairro        │   │ entrega       │      │               │           │
-│  └───────────────┘   └───────────────┘      └───────────────┘           │
-│                                                                         │
-│  AGENTES  frontend · 3 arquivos      COFRE  1Password · 2 chaves       │
-│  PORTÕES  1 conta · 2 pagar · 3 publicar · 4 chave                     │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+![Quadro do Mutirão](docs/board.png)
 
 A página é **um arquivo só**: sem servidor, sem internet, sem login. Ela lê o
 `.specify/specs/*/tasks.md` e as worktrees dos agentes — ou seja, mostra o

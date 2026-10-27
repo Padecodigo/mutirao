@@ -11,8 +11,10 @@
 |---|---|
 | lista de produtos | `GET /api/produtos` |
 
-Mostra: nome da doceria, uma frase de apresentação, grade de produtos (foto,
-nome, preço, botão "adicionar").
+Mostra: nome da doceria, uma frase de apresentação, cidade no rodapé, grade de
+produtos (foto, nome, preço, botão "adicionar").
+
+Rodapé fixo: `Doceria da Ana · São Paulo – SP · entrega de terça a sábado`.
 
 Estados:
 - carregando: esqueleto com 3 blocos
@@ -51,8 +53,25 @@ Ao dar certo: abre o WhatsApp com `whatsapp_url` e mostra "pedido enviado".
 Pede o `ADMIN_TOKEN` uma vez e guarda só na memória da aba (nunca em `localStorage`
 nem no código). Lista os pedidos com data, cliente, itens e total.
 
-Estados: carregando, vazio ("nenhum pedido ainda"), erro, não autorizado
-("token inválido").
+**Ações** (é um painel de gestão: as cinco são obrigatórias)
+
+| Ação | Como aparece | O que acontece |
+|---|---|---|
+| abrir | clique no pedido | detalhe com itens e endereço |
+| editar | botão "Marcar como entregue" | `PATCH /api/pedidos/{id}` |
+| excluir um | botão "Excluir" | modal "Apagar o pedido de **Maria**?" · confirma · some da lista · aviso "pedido apagado · desfazer" por 5s (`DELETE .../{id}` e `POST .../restaurar`) |
+| limpar todos | botão "Limpar lista" | modal com campo para digitar `APAGAR` + link "baixar CSV antes" · `DELETE /api/pedidos` · tela vazia |
+
+Estados: carregando, vazio ("nenhum pedido ainda · os pedidos aparecem aqui
+assim que um cliente enviar"), erro, não autorizado ("token inválido").
+
+Detalhes de segurança da tela:
+
+- O botão de excluir fica separado dos outros e em cor de alerta — nunca ao lado
+  do "marcar como entregue".
+- Enquanto apaga, o botão fica desabilitado (evita clique duplo).
+- Se a rede falhar, o pedido **volta** para a lista e aparece "não consegui
+  apagar, tente de novo" — a tela nunca mente sobre o que aconteceu.
 
 ---
 

@@ -46,6 +46,16 @@ e total. Confere e responde confirmando.
   menos de 1 minuto, com data e hora.
 - **Prioridade:** importante
 
+### H5 · Ana apaga um pedido e limpa a lista
+
+- **Como** Ana, **quero** apagar um pedido errado e limpar os pedidos de teste,
+  **para** a lista mostrar só o que é de verdade.
+- **Como sei que funcionou:** toco em "excluir" num pedido e ele pergunta
+  "Apagar o pedido de Maria?"; confirmo, o pedido some e aparece "pedido
+  apagado · desfazer" por 5 segundos. Em "limpar lista", preciso digitar
+  `APAGAR` antes; depois a lista mostra "nenhum pedido ainda".
+- **Prioridade:** essencial
+
 ## O que NÃO faz (nesta versão)
 
 - Não recebe pagamento online (a Ana combina Pix pelo WhatsApp)
@@ -57,13 +67,14 @@ e total. Confere e responde confirmando.
 ## Regras do negócio
 
 - Pedido mínimo: R$ 30,00
-- Entrega só nos bairros: Centro, Jardim América, Vila Nova — taxa R$ 8,00
+- Entrega apenas na cidade de **São Paulo – SP**, nos bairros: Centro, Jardim América, Vila Nova — taxa R$ 8,00
 - Encomendas para o dia seguinte precisam ser feitas até 18h
 - Bolo inteiro exige 24h de antecedência (aviso na tela)
 
 ## Conteúdo e identidade
 
 - Nome: Doceria da Ana
+- Cidade: **São Paulo – SP** (aparece no rodapé da home e na mensagem do WhatsApp)
 - Cores: rosa queimado (#B5654A) e creme (#FBF6F0)
 - Textos prontos: não — usar exemplo e a Ana troca depois
 - Fotos: sim, 6 fotos enviadas por ela
@@ -73,6 +84,7 @@ e total. Confere e responde confirmando.
 - [ ] A cliente monta e envia um pedido no celular sem ajuda
 - [ ] A Ana recebe a mensagem completa no WhatsApp
 - [ ] O total nunca erra
+- [ ] A Ana apaga um pedido, se arrepende e desfaz — sem ajuda
 - [ ] A página abre em menos de 3 segundos no 4G
 
 ## Perguntas em aberto

@@ -151,6 +151,34 @@ Se um agente precisar mudar um contrato, **ele para e avisa**, não muda sozinho
 | Backend | `src/server`, `src/api`, `migrations`, `tests` | componentes de tela |
 | Revisor | nada (só lê, roda e integra) | escrever feature nova |
 
+### Todo painel de gestão tem o mínimo
+
+Se a pessoa vai **gerenciar** algo (pedidos, clientes, produtos, mensagens), a
+tela não está pronta sem estas cinco ações:
+
+| Ação | Sem ela, a pessoa... |
+|---|---|
+| **listar** | não sabe o que existe |
+| **abrir** | não sabe o que tem dentro |
+| **editar** | erra e não consegue corrigir |
+| **excluir um** | não consegue consertar o próprio engano |
+| **limpar todos** | fica presa com dados de teste para sempre |
+
+E sem estas três proteções, as ações acima viram um perigo:
+
+1. **Confirmação dizendo o que será apagado, com o nome real** — "Apagar o
+   pedido de Maria?" e não "Tem certeza?".
+2. **Desfazer** por alguns segundos, ou lixeira onde dá para recuperar.
+3. **Nunca apagar em silêncio**: a tela confirma o que foi apagado e quantos.
+
+"Limpar todos" é o caso extremo: exige digitar uma palavra de confirmação
+(`APAGAR`) e oferece exportar antes. Se o dado é dinheiro, histórico ou cliente,
+prefira **arquivar** (marcar como apagado) a apagar de verdade — exclusão de
+verdade só quando a pessoa pedir, sabendo.
+
+Painel sem excluir é meia tela. Se o contrato não tem `DELETE`, o painel não
+está pronto — mesmo que "pareça" funcionando.
+
 ---
 
 ## 6. Papéis

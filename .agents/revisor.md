@@ -21,6 +21,15 @@ Você **não** escreve feature nova. Se faltar algo, devolve para quem fez.
 **2. Contra os contratos**
 - [ ] Rotas, campos e formatos batem entre front e back
 - [ ] Erros combinados existem de verdade
+- [ ] Todo painel de gestão tem as cinco ações (listar, abrir, editar, excluir,
+      limpar) com confirmação, desfazer e aviso do que foi apagado
+- [ ] Existe `DELETE` no contrato para cada coisa que o painel lista
+
+**2.1 Na prática, no painel**
+- [ ] Apagar um item pede confirmação **com o nome** do item
+- [ ] Depois de apagar, dá para desfazer
+- [ ] "Limpar tudo" exige digitar a palavra de confirmação
+- [ ] A lista vazia ensina como criar o primeiro item
 
 **3. Segurança**
 - [ ] `mutirao guard scan` limpo

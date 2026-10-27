@@ -78,3 +78,62 @@ Página da Ana. Exige header `x-admin-token` com o valor da variável
 ```
 
 **401** `{ "erro": "nao_autorizado" }` sem header válido.
+
+Por padrão a lista **não** inclui pedidos apagados. `?incluir_apagados=1` mostra
+tudo, com a data de exclusão.
+
+---
+
+## `PATCH /api/pedidos/{id}` — muda o status
+
+Header `x-admin-token` obrigatório.
+
+**Entrada** `{ "status": "confirmado" }` — aceita `confirmado` ou `entregue`.
+
+**200** `{ "pedido": { ... } }`
+
+| Status | `erro` | Quando |
+|---|---|---|
+| 400 | `status_invalido` | valor fora da lista |
+| 404 | `pedido_nao_encontrado` | id inexistente ou apagado |
+
+---
+
+## `DELETE /api/pedidos/{id}` — apaga (arquiva) um pedido
+
+Header `x-admin-token` obrigatório.
+
+**204** sem corpo. O pedido vira `status: "apagado"` com `apagado_em` e sai da
+lista padrão. Continua restaurável por 30 dias.
+
+| Status | `erro` | Quando |
+|---|---|---|
+| 404 | `pedido_nao_encontrado` | id inexistente ou já apagado |
+
+---
+
+## `POST /api/pedidos/{id}/restaurar` — desfaz a exclusão
+
+**200** `{ "pedido": { ... } }` devolvendo o pedido ao status anterior.
+
+| Status | `erro` | Quando |
+|---|---|---|
+| 404 | `pedido_nao_encontrado` | id inexistente ou já apagado há mais de 30 dias |
+
+---
+
+## `DELETE /api/pedidos` — limpa a lista (arquiva todos)
+
+Header `x-admin-token` obrigatório. Exige confirmação explícita no corpo.
+
+**Entrada** `{ "confirmar": "APAGAR" }`
+
+**200** `{ "arquivados": 12 }`
+
+| Status | `erro` | Quando |
+|---|---|---|
+| 400 | `confirmacao_invalida` | corpo sem `confirmar: "APAGAR"` |
+| 409 | `nada_para_apagar` | nenhum pedido ativo |
+
+Antes de limpar, a tela oferece exportar CSV. Apagar não remove do banco: apenas
+marca todos como apagados.

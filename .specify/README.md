@@ -10,7 +10,8 @@ Aqui ficam as decisões em português, antes de virarem código.
 ├── templates/               ← modelos em branco
 │   ├── spec.md
 │   ├── plan.md
-│   └── tasks.md
+│   ├── tasks.md
+│   └── ui.md                ← contrato de tela, com o checklist de painel
 └── specs/
     └── 001-nome-curto/      ← uma pasta por funcionalidade
         ├── spec.md          ← O QUE e POR QUÊ

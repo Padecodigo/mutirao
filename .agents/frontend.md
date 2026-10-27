@@ -24,6 +24,10 @@ Toda tela que você entrega tem:
 4. **Texto em português correto**, sem "lorem ipsum" na entrega.
 5. **Nada de tela em branco sem explicação.** Se algo falhar, a pessoa precisa
    entender o que fazer.
+6. **Se é painel de gestão, tem as cinco ações:** listar, abrir, editar, excluir
+   um e limpar todos. Excluir e limpar vêm com confirmação citando o nome,
+   desfazer (ou lixeira) e mensagem do que foi apagado. Painel sem excluir é
+   meia tela — ver [AGENTS.md](../AGENTS.md#todo-painel-de-gestão-tem-o-mínimo).
 
 ---
 
@@ -47,6 +51,7 @@ Toda tela que você entrega tem:
 - [ ] Funciona em 375px de largura
 - [ ] Tem os três estados (carregando/vazio/erro)
 - [ ] Envia e recebe dados no formato do contrato
+- [ ] Se é painel: excluir e limpar existem, com confirmação e desfazer
 - [ ] Nenhuma chave no código
 - [ ] Você abriu e clicou em tudo, de verdade
 

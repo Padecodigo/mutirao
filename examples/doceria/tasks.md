@@ -29,11 +29,20 @@
 - [ ] **T9** · frontend · Tela `/admin` com lista e estados
       → pedido de teste aparece; token errado mostra "token inválido"
 
-## Rodada 4 — entrega
+## Rodada 4 — a Ana gerencia a lista
 
-- [ ] **T10** · revisor · Testar caminho feliz + erro em 375px e desktop
-- [ ] **T11** · revisor · `mutirao guard scan` limpo, build passando
-- [ ] **T12** · maestro · Mostrar para a Ana e publicar (Portão 3)
+- [ ] **T10** · backend · `DELETE /api/pedidos/{id}` (arquiva) e `POST .../restaurar`
+      → apagar some da lista padrão; restaurar traz de volta com o status anterior
+- [ ] **T11** · backend · `DELETE /api/pedidos` exigindo `confirmar: "APAGAR"`
+      → sem a palavra devolve `confirmacao_invalida`; com a palavra, a lista fica vazia
+- [ ] **T12** · frontend · botões excluir e limpar, com modal, desfazer e estado vazio
+      → apago e vejo "desfazer" por 5s; limpar só funciona digitando APAGAR
+
+## Rodada 5 — entrega
+
+- [ ] **T13** · revisor · Testar caminho feliz + erro em 375px e desktop
+- [ ] **T14** · revisor · `mutirao guard scan` limpo, build passando
+- [ ] **T15** · maestro · Mostrar para a Ana e publicar (Portão 3)
 
 ## Bloqueios
 

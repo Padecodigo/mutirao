@@ -1,0 +1,104 @@
+# PROPÓSITO: template comentado da camada de otimização de tokens — limites de
+# linhas por resposta, estratégia de resumo, regras de truncamento, handles para
+# dados brutos e overrides por comando.
+#
+# Este arquivo é um MODELO: copie para token-optimization/config.local.yaml
+# (ignorado pelo git) e ajuste ao seu orçamento. Os campos são consumidos pelo
+# seu proxy/wrapper ou pelo agente; não são lidos automaticamente por nada aqui.
+#
+# Documentação: token-optimization/README.md
+
+version: 1
+
+# --- Padrões globais -------------------------------------------------------
+defaults:
+  # Teto de linhas que uma saída de ferramenta pode ocupar no contexto.
+  max_lines_per_response: 200
+  # Teto absoluto em bytes, independente da contagem de linhas (protege contra
+  # linhas únicas muito longas, ex.: JSON minificado em uma linha).
+  max_bytes_per_response: 32768
+  # Heurística de estimativa: 4 bytes ≈ 1 token (código/inglês). Em pt-BR, use 3.
+  bytes_per_token: 4
+  # O que fazer quando a saída excede o limite: head | tail | head_tail | none
+  # head_tail é o padrão recomendado: começo (contexto) + fim (resultado/erro).
+  overflow_mode: head_tail
+
+# --- Estratégia de resumo --------------------------------------------------
+# Quem resume o quê. `structured` só vale quando a ferramenta produz resumo
+# confiável (proxy MCP); fora disso, truncar é obrigatório — não inventar resumo.
+summary:
+  strategy: truncate          # truncate | structured | none
+  # Se true, o agente deve pedir o trecho exato ao invés de reler o payload todo.
+  allow_followup_fetch: true
+  # Formato do sumário estruturado (usado só com strategy: structured).
+  structured:
+    include: [counts, errors, changed_files, duration]
+    max_items_per_section: 20
+
+# --- Truncamento -----------------------------------------------------------
+truncation:
+  mode: head_tail             # herda de defaults.overflow_mode se omitido
+  head_lines: 120
+  tail_lines: 60
+  # Marcador obrigatório: nunca truncar em silêncio.
+  marker: "... {omitted_lines} linhas omitidas (ref: {ref}) ..."
+  # Blocos que NUNCA são truncados: se aparecerem, o resto é cortado e eles ficam.
+  preserve_patterns:
+    - "Error"
+    - "Exception"
+    - "Traceback"
+    - "FAIL"
+    - "panic:"
+    - "--- FAIL"
+
+# --- Handles de dados brutos -----------------------------------------------
+# Em vez de mandar o payload inteiro, grava em disco e passa a referência.
+handles:
+  enabled: true
+  store_dir: .cache/tool-output     # fora do versionamento (.gitignore)
+  handle_prefix: "ref:"
+  ttl_minutes: 120                  # descarta bruto antigo
+  max_total_mb: 200                 # teto de disco para o buffer
+  # Nunca gravar payload já redigido? false = grava bruto (necessário para depurar).
+  store_redacted_only: false
+
+# --- Orçamento de sessão ---------------------------------------------------
+budget:
+  max_tokens_per_session: 200000
+  warn_at_percent: 75
+  stop_at_percent: 95
+  # Ao atingir warn, o agente deve consolidar estado em tasks.md antes de continuar.
+  compact_on_warn: true
+
+# --- Redação (integra com a camada de segurança) ---------------------------
+redaction:
+  enabled: true
+  config: security/vibeguard.yaml   # padrões de PII/segredo
+  before_compaction: true           # SEMPRE redigir antes de resumir/truncar
+  fail_closed: true                 # falhou a redação => bloqueia a saída
+
+# --- Overrides por comando -------------------------------------------------
+# Primeiro padrão que casar (regex na linha de comando) vence.
+command_overrides:
+  - pattern: "\\bgit log\\b"
+    max_lines: 40
+    strategy: summary            # hash, autor, data, primeira linha do assunto
+  - pattern: "\\bgit diff\\b"
+    max_lines: 120
+    extra_args: ["--stat"]       # sugerir --stat antes do diff completo
+  - pattern: "\\b(ls|tree)\\b"
+    max_lines: 80
+  - pattern: "\\b(npm|pnpm|yarn) (install|i)\\b"
+    max_lines: 60
+    strategy: summary
+  - pattern: "\\b(npm test|pytest|go test|cargo test|vitest|jest)\\b"
+    max_lines: 150
+    preserve_patterns: ["FAIL", "Error", "failed"]
+  - pattern: "\\bdocker (ps|logs)\\b"
+    max_lines: 60
+
+# --- Telemetria local (opcional) -------------------------------------------
+metrics:
+  enabled: true
+  file: .cache/token-metrics.jsonl   # uma linha JSON por operação: antes/depois
+  include_command: true              # registre o comando (sem argumento sensível)

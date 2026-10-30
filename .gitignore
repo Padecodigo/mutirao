@@ -1,7 +1,14 @@
-# Segredos — nunca versionar
+# .gitignore — define o que NUNCA entra no controle de versão.
+# Objetivo: impedir vazamento de segredos, poluição do repositório por
+# dependências instaladas e commits acidentais de lixo local.
+# Regra inegociável (security/rules/security-rules.md): arquivo com chave,
+# token, senha ou credencial não é versionado — em nenhuma hipótese.
+
+# --- Segredos e credenciais (nunca versionar) ---
 .env
 .env.*
 !.env.example
+!.env.sample
 .env.sample
 *.pem
 *.key
@@ -13,31 +20,48 @@ id_ed25519
 secrets/
 credentials.json
 
-# Estado local do Mutirão (cofre local, worktrees, config)
+# --- Estado local do Mutirão (cofre local, worktrees, config) ---
 .mutirao/
 
-# Sistema
+# --- Temporários ---
+*.tmp
+*.temp
+*.bak
+*.orig
+tmp/
+.cache/
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Node / build
+# --- Logs ---
+*.log
+logs/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+
+# --- Dependências / build (Node) ---
 node_modules/
 dist/
 build/
 .next/
 out/
-coverage/
-*.log
-npm-debug.log*
+.npm/
+.pnpm-store/
 
-# Python
+# --- Dependências / build (Python) ---
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
 .venv/
 venv/
+.pytest_cache/
 
-# Editores
+# --- Editores ---
 .vscode/
 .idea/
 *.swp
+*.swo

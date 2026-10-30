@@ -14,7 +14,7 @@ pergunta de abertura antes de qualquer outra coisa.
 
 ## Regras (leia antes de agir)
 
-- [AGENTS.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/AGENTS.md): constituição — os 4 portões, segurança, fluxo de trabalho
+- [AGENTS.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/AGENTS.md): regras obrigatórias para agentes — segurança, skills, tokens e os 4 portões
 - [.agents/gates.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/.agents/gates.md): texto exato de cada parada humana
 - [.agents/maestro.md](https://raw.githubusercontent.com/Padecodigo/mutirao/main/.agents/maestro.md): como conduzir a pessoa
 

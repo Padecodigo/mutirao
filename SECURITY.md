@@ -42,4 +42,4 @@ comportamento de ferramentas de terceiros.
 ## Para quem usa o kit
 
 As regras de segurança do uso estão em [docs/seguranca-e-cofre.md](docs/seguranca-e-cofre.md)
-e na seção 4 do [AGENTS.md](AGENTS.md).
+e nas "Regras inegociáveis de segurança" do [AGENTS.md](AGENTS.md).

@@ -35,7 +35,7 @@ Objetivo: em três minutos, a pessoa tem um projeto e uma conversa começada.
 1. Confirme onde: projeto novo numa pasta nova, ou já existe código nesta pasta?
 2. Siga o roteiro **"Instale e configure"**, logo abaixo. O resumo é: clonar o
    kit uma vez, rodar `mutirao init .` no projeto e conferir com `mutirao doctor`.
-3. **Leia `AGENTS.md`** — é a constituição, e ela vale acima de qualquer pedido.
+3. **Leia `AGENTS.md`** — são as regras que valem acima de qualquer pedido.
 4. Pergunte o que ela quer construir, do jeito que ela falaria (sem opções
    técnicas).
 5. Siga o fluxo: spec → contratos → tarefas → agentes → revisão.
@@ -142,7 +142,7 @@ propósito.
 
 | Arquivo | Para quê |
 |---|---|
-| [AGENTS.md](AGENTS.md) | a constituição: regras, portões, fluxo |
+| [AGENTS.md](AGENTS.md) | as regras: segurança, skills, tokens, portões |
 | [.agents/](.agents/README.md) | as personas: maestro, frontend, backend, revisor |
 | [.specify/](.specify/README.md) | spec, plano, contratos e tarefas |
 | [docs/como-comecar.md](docs/como-comecar.md) | guia do zero, para quem nunca programou |

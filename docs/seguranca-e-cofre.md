@@ -133,7 +133,7 @@ Google, Slack, JWT, `.env`, `.pem`, `.key`, e atribuições suspeitas do tipo
 | pedir para você criar/trocar | imprimir, logar, repetir |
 | ver `vault list` (✔/✘) | commitar segredo |
 
-Isso está escrito em [AGENTS.md](../AGENTS.md), seção 4. Um agente que desobedece
+Isso está escrito em [AGENTS.md](../AGENTS.md), em "Regras inegociáveis de segurança". Um agente que desobedece
 essas regras não está seguindo o Mutirão.
 
 ---

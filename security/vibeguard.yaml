@@ -1,0 +1,96 @@
+# PROPÓSITO: modelo de configuração do VibeGuard — limites de contexto por
+# sessão e padrões de PII/segredos que devem ser redigidos das saídas de
+# ferramentas (logs, stack traces, JSON de API) antes de chegarem ao modelo.
+#
+# IMPORTANTE: este é o esquema PRÓPRIO deste repositório. NÃO é o formato nativo
+# de nenhuma ferramenta de terceiros; se você usar um proxy/redator externo,
+# mapeie os campos abaixo para o formato dele.
+#
+# Uso: copie para vibeguard.local.yaml (ignorado pelo git), ajuste os limites ao
+# seu orçamento de contexto e carregue no seu harness/proxy.
+# Política que este arquivo implementa: security/rules/security-rules.md (Regras 1 e 4).
+
+version: 1
+
+# --- Limites de contexto ---------------------------------------------------
+# Valores em tokens. O objetivo é cortar a saída ANTES de ela entrar no prompt,
+# não pedir ao modelo que "lembre de ser breve".
+session:
+  # Teto de tokens de entrada + saída para uma sessão inteira.
+  max_tokens_per_session: 200000
+  # Teto de tokens de saída por turno (evita resposta gigante e truncada pela metade).
+  max_output_tokens_per_turn: 8000
+  # Percentual de uso que dispara aviso ao agente/humano.
+  warn_at_percent: 75
+  # Percentual de uso que interrompe a sessão (fail-closed, ver fail_closed abaixo).
+  stop_at_percent: 95
+  # Máximo de linhas de saída de ferramenta repassadas por padrão.
+  max_tool_output_lines: 200
+
+  fail_closed: true          # limite atingido => bloqueia, não "tenta mais um pouco"
+  count_cache_reads: false   # leitura de cache de prompt não consome cota da sessão
+
+# --- Redação de PII e segredos ---------------------------------------------
+redaction:
+  enabled: true
+  # Aplicar em toda saída que entra no contexto, não só no que o usuário digita.
+  where:
+    - tool_output
+    - command_stderr
+    - file_read
+    - api_response
+  # Formato da substituição. {type} vem do campo `type` de cada padrão.
+  replacement: "[REDACTED:{type}]"
+  # Se a redação falhar (regex inválida, tempo esgotado), bloquear a saída
+  # em vez de repassá-la crua.
+  fail_closed: true
+  # Exceções que nunca são redigidas (dados de teste, documentação).
+  # Descomente e ajuste com cuidado: e-mail em allowlist é e-mail que passa.
+  allowlist: []
+  #   - "exemplo@empresa.com"
+  #   - "000.000.000-00"
+
+  # Padrões avaliados em ordem. `type` é o rótulo usado na substituição.
+  # `flags` (opcional) aceita as flags de RegExp do JavaScript: i, m, s, u.
+  # Regex inline do tipo (?i) NÃO é válida em JavaScript — use o campo flags.
+  patterns:
+    - name: email
+      type: pii.email
+      regex: "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+
+    - name: cpf
+      type: pii.cpf
+      # 11 dígitos, com ou sem pontuação. Falso positivo possível com números
+      # longos: revisar a allowlist antes de ligar em produção.
+      regex: "\\b\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}\\b"
+
+    - name: cnpj
+      type: pii.cnpj
+      regex: "\\b\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}\\b"
+
+    - name: chave-api-generica
+      type: secret.api_key
+      # api_key = ..., token: ..., senha=...  seguido de valor com 16+ caracteres.
+      flags: i
+      regex: "(api[_-]?key|apikey|secret[_-]?key|access[_-]?token|client[_-]?secret|password|senha)[ \\t]*[:=][ \\t]*\\S{16,}"
+
+    - name: bearer-token
+      type: secret.bearer
+      flags: i
+      regex: "bearer[ \\t]+[A-Za-z0-9._\\-]{16,}"
+
+    - name: aws-access-key
+      type: secret.aws
+      regex: "AKIA[0-9A-Z]{16}"
+
+    - name: github-token
+      type: secret.github
+      regex: "gh[pousr]_[A-Za-z0-9]{36,}"
+
+    - name: jwt
+      type: secret.jwt
+      regex: "eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}"
+
+    - name: chave-privada
+      type: secret.private_key
+      regex: "-----BEGIN [A-Z ]*PRIVATE KEY-----"

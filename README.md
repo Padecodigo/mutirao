@@ -114,6 +114,7 @@ ferramentas auxiliares (skillshare, ShrinkWrap, VibeGuard, RTK).
 | [ShrinkWrap](https://github.com/lucronn/shrinkwrap) | proxy MCP: resume payload grande e devolve handle | `pip install shrinkwrap-cli` |
 | [RTK](https://github.com/rtk-ai/rtk) | comprime saída de comandos de terminal | `brew install rtk` (confirme com `rtk gain`) |
 | [VibeGuard](https://github.com/zeroFhacker/vibeguard) | linter de segurança para código gerado por IA | `git clone` + `pip install -r requirements.txt` |
+| [ai-memory](https://github.com/akitaonrails/ai-memory) | memória de longo prazo e handoff entre harnesses | `curl -fsSL …/install.sh \| sh` + `ai-memory setup --yes --agent <harness>` |
 
 Nenhuma é dependência obrigatória: o repositório funciona offline com Node 18+ e Bash.
 

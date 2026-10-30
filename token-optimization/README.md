@@ -34,7 +34,7 @@ shrinkwrap benchmark           # mede a economia
 na web — qualquer payload em que o modelo precise de **fatos**, não de todos os bytes.
 
 **Cuidado:** se o resumo esconder o erro, o agente alucina a causa. Payload de falha
-segue a regra de truncamento preservando `error`/stacktrace (seção 4).
+segue a regra de truncamento preservando `error`/stacktrace (seção 5).
 
 ---
 
@@ -74,7 +74,35 @@ relação). Por isso este documento usa **RTK**, que é real, e o padrão manual
 
 ---
 
-## 3. Leitura fatiada (progressive disclosure)
+## 3. Memória entre sessões — não é compressão
+
+**Ferramenta verificada:** [ai-memory](https://github.com/akitaonrails/ai-memory)
+(★14,5k, MIT, Rust) — memória de longo prazo compartilhada entre 20+ harnesses,
+com *handoff* tipado: saia do Claude Code no meio, abra o Codex no mesmo diretório
+e ele retoma com o que falhou e o que ficou aberto.
+
+```bash
+curl -fsSL https://github.com/akitaonrails/ai-memory/releases/latest/download/install.sh | sh
+ai-memory setup --yes --agent claude-code   # ou codex, cursor, gemini-cli...
+# reinicie o harness para carregar MCP + hooks
+```
+
+**A economia é indireta:** você deixa de reexplicar arquitetura e tentativas
+falhas a cada sessão. O custo é o *startup packet* injetado no começo — memória
+não é compressão. A compressão extrativa do ai-memory vem **desligada por padrão**.
+
+Diferença entre as três camadas (não confunda):
+
+| Camada | Ferramenta | O que "economiza" | Custo/risco |
+|---|---|---|---|
+| **Memória** | ai-memory | retrabalho entre sessões e troca de agente | injeta contexto no início; dados ficam **fora** do repositório |
+| **Compressão** | ShrinkWrap, RTK | bytes de saída de ferramenta | resumo pode esconder a causa do erro |
+| **Redação** | `vibeguard.mjs` | não é economia: é vazamento evitado | redigir demais esconde dado útil |
+
+Instalação opcional neste repositório: `bash scripts/install-tools.sh --ai-memory`
+(ou `--ai-memory-agent claude-code`). Nada é instalado sem a flag.
+
+## 4. Leitura fatiada (progressive disclosure)
 
 Quem controla o custo é o **agente**, não a ferramenta:
 
@@ -85,7 +113,7 @@ Quem controla o custo é o **agente**, não a ferramenta:
 
 ---
 
-## 4. Regras de truncamento (não negociáveis)
+## 5. Regras de truncamento (não negociáveis)
 
 1. **Cabeça + cauda, com marcador explícito.** Nunca corte silenciosamente:
    `… 412 linhas omitidas (ref: .cache/tool-output/test.log) …`
@@ -101,7 +129,7 @@ Quem controla o custo é o **agente**, não a ferramenta:
 
 ---
 
-## 5. Orçamento e configuração
+## 6. Orçamento e configuração
 
 **Já ativo:** o filtro local [`security/scripts/vibeguard.mjs`](../security/scripts/vibeguard.mjs)
 lê `security/vibeguard.yaml` e aplica redação + truncamento + handle de verdade:
@@ -127,7 +155,7 @@ Relação com as outras camadas:
 
 ---
 
-## 6. Como medir (sem achismo)
+## 7. Como medir (sem achismo)
 
 | Medida | Como |
 |---|---|
@@ -141,7 +169,7 @@ Meça antes e depois. "Deve economizar" não é resultado; número no terminal �
 
 ---
 
-## 7. Tabela de decisão
+## 8. Tabela de decisão
 
 | Situação | Estratégia |
 |---|---|
@@ -154,7 +182,7 @@ Meça antes e depois. "Deve economizar" não é resultado; número no terminal �
 
 ---
 
-## 8. Falhas comuns
+## 9. Falhas comuns
 
 | Sintoma | Causa provável | Correção |
 |---|---|---|

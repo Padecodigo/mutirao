@@ -431,6 +431,15 @@ else
   printf '  - python3 ou curl ausente: teste do --serve ignorado\n'
 fi
 
+# ========================================================== filtro de contexto
+section "Filtro de contexto (vibeguard)"
+
+if bash "$KIT/tests/test-vibeguard.sh" >/dev/null 2>&1; then
+  ok "test-vibeguard.sh (16 verificações)"
+else
+  bad "test-vibeguard.sh"
+fi
+
 # ================================================================ resultado
 printf '\n'
 if (( FAIL == 0 )); then

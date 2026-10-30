@@ -2,9 +2,10 @@
 # linhas por resposta, estratégia de resumo, regras de truncamento, handles para
 # dados brutos e overrides por comando.
 #
-# Este arquivo é um MODELO: copie para token-optimization/config.local.yaml
-# (ignorado pelo git) e ajuste ao seu orçamento. Os campos são consumidos pelo
-# seu proxy/wrapper ou pelo agente; não são lidos automaticamente por nada aqui.
+# Este arquivo é um MODELO para proxies/wrappers externos: copie para
+# token-optimization/config.local.yaml (ignorado pelo git) e ajuste. O filtro
+# local deste repositório usa security/vibeguard.yaml (redação + truncamento);
+# este template serve para quem plugar ShrinkWrap/RTK ou um proxy próprio.
 #
 # Documentação: token-optimization/README.md
 

@@ -28,9 +28,14 @@ não invente pacote, API ou comando.
 
 **3. Contexto é recurso.**
 Utilize as diretrizes em [token-optimization/](token-optimization/README.md) para
-comandos que retornem saídas extensas (`git log`, `ls -R`, logs de build, JSON
-grande). Trunque com marcador explícito, preserve blocos de erro e guarde o bruto
-em `.cache/tool-output/`.
+comandos que retornem saídas extensas. Passe a saída pelo filtro local:
+
+```bash
+comando 2>&1 | node security/scripts/vibeguard.mjs
+```
+
+Ele redige PII/segredo (segundo `security/vibeguard.yaml`), trunca com marcador
+explícito, preserva linhas de erro e guarda a referência em `.cache/tool-output/`.
 
 **4. Dependência só depois de verificar.**
 Execute obrigatoriamente `node security/scripts/verify-deps.mjs <pacote>` antes
@@ -71,11 +76,12 @@ que será perdido — depois espere um "sim" claro.
 ## Comandos essenciais
 
 ```bash
-bash scripts/setup.sh                          # valida pré-requisitos e cria a estrutura
-bash scripts/sync.sh                           # checa segurança, skills e dependências
+bash scripts/setup.sh --all                    # estrutura + hook de pre-commit + sync
+bash scripts/sync.sh                           # revalida segurança, skills e dependências
 node security/scripts/verify-deps.mjs <pacote> # 0 existe · 1 não existe · 2 incerto
+comando | node security/scripts/vibeguard.mjs  # redige e trunca antes do contexto
+node security/scripts/check-invisible.mjs      # caracteres invisíveis (0 limpo, 1 achou)
 mutirao guard scan                             # varre segredos no projeto
-mutirao guard staged                           # varre o que vai para o commit
 ```
 
 ## Como responder ao usuário

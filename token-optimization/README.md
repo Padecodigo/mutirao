@@ -103,9 +103,19 @@ Quem controla o custo é o **agente**, não a ferramenta:
 
 ## 5. Orçamento e configuração
 
-O template [`config.example.yaml`](config.example.yaml) define limites por sessão,
-estratégia de resumo, regras de truncamento, handles de dados brutos e overrides por
-comando. Copie para `token-optimization/config.local.yaml` (não versionado) e ajuste.
+**Já ativo:** o filtro local [`security/scripts/vibeguard.mjs`](../security/scripts/vibeguard.mjs)
+lê `security/vibeguard.yaml` e aplica redação + truncamento + handle de verdade:
+
+```bash
+meu-comando 2>&1 | node security/scripts/vibeguard.mjs            # usa os padrões
+meu-comando | node security/scripts/vibeguard.mjs --max-lines 80  # aperta o limite
+node security/scripts/vibeguard.mjs --check                       # valida a configuração
+```
+
+O template [`config.example.yaml`](config.example.yaml) continua sendo a referência
+para **proxies externos** (ShrinkWrap e afins): limites por sessão, estratégia de
+resumo, overrides por comando. Copie para `token-optimization/config.local.yaml`
+(não versionado) e ajuste.
 
 Relação com as outras camadas:
 

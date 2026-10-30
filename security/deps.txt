@@ -1,0 +1,15 @@
+# PROPÓSITO: declarar as dependências externas do projeto para validação
+# automática no scripts/sync.sh — uma por linha, validada contra o registro
+# npm antes de qualquer instalação (defesa contra slopsquatting).
+#
+# Formato:
+#   - uma dependência por linha (nome do pacote npm, ex.: zod, @types/node)
+#   - linhas começando com # são ignoradas
+#   - vazio = projeto sem dependências (é o caso hoje: só Node/Bash puros)
+#
+# Este arquivo existe para que a etapa 3 do sync.sh funcione mesmo sem
+# package.json. Se o projeto ganhar package.json, as duas fontes são somadas.
+#
+# Exemplo (descomente ao adicionar):
+# zod
+# @types/node

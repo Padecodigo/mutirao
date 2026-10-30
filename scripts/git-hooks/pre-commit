@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# PROPÓSITO: bloquear commit que carregue segredo, caractere invisível ou
+# configuração de contexto inválida. É copiado para .git/hooks/pre-commit por
+# `bash scripts/setup.sh --hooks`.
+#
+# Se o hook recusar: conserte o arquivo. Nunca use --no-verify para contornar.
+
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+if [[ -x ./mutirao ]]; then
+  printf 'pre-commit: segredos...\n'
+  ./mutirao guard staged
+else
+  printf 'pre-commit: CLI mutirao ausente — verificando segredos só nos arquivos rastreados\n' >&2
+fi
+
+printf 'pre-commit: caracteres invisíveis...\n'
+node security/scripts/check-invisible.mjs >/dev/null
+
+printf 'pre-commit: configuração do filtro...\n'
+node security/scripts/vibeguard.mjs --check >/dev/null
+
+printf 'pre-commit: ok\n'

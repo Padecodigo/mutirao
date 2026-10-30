@@ -6,6 +6,9 @@
 # de nenhuma ferramenta de terceiros; se você usar um proxy/redator externo,
 # mapeie os campos abaixo para o formato dele.
 #
+# Consumido por security/scripts/vibeguard.mjs (filtro local):
+#   comando 2>&1 | node security/scripts/vibeguard.mjs
+#
 # Uso: copie para vibeguard.local.yaml (ignorado pelo git), ajuste os limites ao
 # seu orçamento de contexto e carregue no seu harness/proxy.
 # Política que este arquivo implementa: security/rules/security-rules.md (Regras 1 e 4).
@@ -29,6 +32,21 @@ session:
 
   fail_closed: true          # limite atingido => bloqueia, não "tenta mais um pouco"
   count_cache_reads: false   # leitura de cache de prompt não consome cota da sessão
+
+# --- Truncamento (usado por security/scripts/vibeguard.mjs) ----------------
+# Aplicado DEPOIS da redação: primeiro esconde o segredo, depois corta o excesso.
+truncation:
+  mode: head_tail            # head | tail | head_tail | none
+  head_lines: 120
+  tail_lines: 60
+  marker: "... {omitted_lines} linhas omitidas (ref: {ref}) ..."
+  # Linhas que nunca são omitidas (erro/falha ficam sempre visíveis).
+  preserve_patterns:
+    - "Error"
+    - "Exception"
+    - "Traceback"
+    - "FAIL"
+    - "panic:"
 
 # --- Redação de PII e segredos ---------------------------------------------
 redaction:

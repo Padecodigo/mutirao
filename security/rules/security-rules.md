@@ -155,6 +155,9 @@ mutirao guard scan            # varre segredos no projeto inteiro
 mutirao guard staged          # varre o que vai para o próximo commit
 mutirao guard install         # instala a trava automática de commit
 node security/scripts/verify-deps.mjs <pacote>   # Regra 2
+comando | node security/scripts/vibeguard.mjs    # Regra 3: redige PII/segredo e trunca
+node security/scripts/check-invisible.mjs        # Regra 3: zero-width/bidi
+bash scripts/setup.sh --hooks                    # Regra 5: bloqueia commit com segredo
 ```
 
 Falhou qualquer um: **não** faça commit, **não** invente contorno, **não** desligue a trava.

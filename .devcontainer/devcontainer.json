@@ -1,0 +1,17 @@
+{
+  "name": "vibecoding-base",
+  "build": { "dockerfile": "Dockerfile" },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "node",
+  "postCreateCommand": "git config --global --add safe.directory /workspace && bash scripts/setup.sh --hooks",
+  "postStartCommand": "bash scripts/sync.sh || true",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n"
+      }
+    }
+  }
+}

@@ -22,6 +22,28 @@ warn() { printf '%s!%s %s\n' "$C_WARN" "$C_R" "$*"; }
 err()  { printf '%s✗%s %s\n' "$C_ERR" "$C_R" "$*" >&2; }
 step() { printf '\n%s== %s ==%s\n' "$C_DIM" "$*" "$C_R"; }
 
+# ------------------------------------------------------------------ argumentos
+
+INSTALL_HOOKS=0
+UNINSTALL_HOOKS=0
+RUN_ALL=0
+
+for arg in "$@"; do
+  case "$arg" in
+    --hooks) INSTALL_HOOKS=1 ;;
+    --uninstall-hooks) UNINSTALL_HOOKS=1 ;;
+    --all) RUN_ALL=1; INSTALL_HOOKS=1 ;;
+    -h|--help)
+      sed -n '2,10p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *)
+      err "argumento desconhecido: $arg (use --hooks, --uninstall-hooks, --all ou --help)"
+      exit 2
+      ;;
+  esac
+done
+
 REQUIRED_DIRS=(
   skills
   security/rules
@@ -125,12 +147,57 @@ RTK — comprime saída de comandos de terminal antes de virar contexto
    brew install rtk        (depois: rtk gain — confirma que instalou o rtk certo)
 EOF
 
+# ---------------------------------------------------------------- hooks do git
+
+step "Hook de pre-commit"
+
+if [[ "$UNINSTALL_HOOKS" -eq 1 ]]; then
+  HOOK_PATH="$(git -C "$ROOT" rev-parse --git-path hooks 2>/dev/null || true)"
+  if [[ -n "$HOOK_PATH" && -f "$ROOT/$HOOK_PATH/pre-commit" ]]; then
+    rm -f "$ROOT/$HOOK_PATH/pre-commit"
+    ok "hook removido de $HOOK_PATH/pre-commit"
+  else
+    warn "nenhum hook instalado"
+  fi
+elif [[ "$INSTALL_HOOKS" -eq 1 ]]; then
+  HOOK_PATH="$(git -C "$ROOT" rev-parse --git-path hooks 2>/dev/null || true)"
+  if [[ -z "$HOOK_PATH" ]]; then
+    warn "não é um repositório git — hook não instalado"
+    WARNINGS=$((WARNINGS + 1))
+  elif [[ ! -f "$ROOT/scripts/git-hooks/pre-commit" ]]; then
+    err "scripts/git-hooks/pre-commit não encontrado"
+    FAILURES=$((FAILURES + 1))
+  else
+    mkdir -p "$ROOT/$HOOK_PATH"
+    cp "$ROOT/scripts/git-hooks/pre-commit" "$ROOT/$HOOK_PATH/pre-commit"
+    chmod +x "$ROOT/$HOOK_PATH/pre-commit"
+    ok "hook instalado em $HOOK_PATH/pre-commit (bloqueia segredo/invisível no commit)"
+  fi
+else
+  ok "sem hooks (use --hooks para instalar; --all instala e sincroniza)"
+fi
+
 # --------------------------------------------------------------------- resumo
 
 step "Resumo"
 
 if [[ "$FAILURES" -gt 0 ]]; then
   err "$FAILURES pré-requisito(s) faltando. Corrija acima e rode novamente."
+  exit 1
+fi
+
+if [[ "$RUN_ALL" -eq 1 ]]; then
+  step "Sincronização (--all)"
+  if bash "$ROOT/scripts/sync.sh"; then
+    ok "sync.sh concluído"
+  else
+    err "sync.sh reportou falhas — veja acima"
+    FAILURES=$((FAILURES + 1))
+  fi
+fi
+
+if [[ "$FAILURES" -gt 0 ]]; then
+  err "$FAILURES etapa(s) falharam. Corrija acima e rode novamente."
   exit 1
 fi
 

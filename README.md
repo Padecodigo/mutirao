@@ -52,6 +52,19 @@ abertura — ou, se a pessoa já pediu "instale e configure", siga o roteiro
 A cola entre os três é a **orquestração**: [`scripts/setup.sh`](scripts/setup.sh)
 prepara o ambiente e [`scripts/sync.sh`](scripts/sync.sh) mantém tudo em dia.
 
+### O que está ativo (não é só documentação)
+
+| Camada | Comando | O que prova |
+|---|---|---|
+| Redação + truncamento | `comando \| node security/scripts/vibeguard.mjs` | e-mail/CPF/chave somem; saída grande vira ~200 linhas + referência |
+| Caracteres invisíveis | `node security/scripts/check-invisible.mjs` | exit `1` se houver zero-width/bidi |
+| Hook de commit | `bash scripts/setup.sh --hooks` | commit com segredo ou invisível é **recusado** |
+| Dependências | `security/deps.txt` + `verify-deps.mjs` | pacote inexistente = exit `1` |
+| Ambiente isolado | `.devcontainer/` | Node/git/bash/python3 sem instalar na máquina |
+
+O que ainda depende de ferramenta externa: proxy MCP (ShrinkWrap) e compressão
+de CLI (RTK) — instaláveis com `bash scripts/install-tools.sh --all`.
+
 ---
 
 ## Início rápido — 3 comandos (para quem vai trabalhar neste repositório)
@@ -60,9 +73,9 @@ Se você só quer **usar** o Mutirão no seu projeto, o caminho é o bloco acima
 Se vai mexer **neste** repositório:
 
 ```bash
-bash scripts/setup.sh     # 1. valida Node/Git/Bash, cria pastas, marca scripts como executáveis
-bash scripts/sync.sh      # 2. confere segurança, skills e dependências
-cat AGENTS.md             # 3. leia as regras que o agente vai seguir
+bash scripts/setup.sh --all   # 1. valida pré-requisitos, cria a estrutura, instala o hook e sincroniza
+bash tests/test-vibeguard.sh  # 2. prova que o filtro redige e trunca (16 verificações)
+cat AGENTS.md                 # 3. leia as regras que o agente vai seguir
 ```
 
 Nada é instalado sem você mandar: o `setup.sh` só **mostra** os comandos das

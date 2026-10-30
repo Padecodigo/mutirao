@@ -101,21 +101,29 @@ for required in security/rules/security-rules.md security/vibeguard.yaml; do
 done
 
 # 2c. Caracteres invisíveis / zero-width (prompt injection oculto).
-if git rev-parse --git-dir >/dev/null 2>&1; then
-  ZW_PATTERN='[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{2069}\x{FEFF}]'
-  if ZW_HITS="$(git grep -I -n --untracked -P "$ZW_PATTERN" -- . 2>/dev/null)"; then
+# Verificador próprio (portátil) em vez de grep -P, que exige PCRE no git.
+if command -v node >/dev/null 2>&1; then
+  if ZW_HITS="$(node security/scripts/check-invisible.mjs 2>&1)"; then
+    ok "nenhum caractere invisível (zero-width/bidi)"
+  else
     err "caracteres invisíveis encontrados:"
     printf '%s\n' "$ZW_HITS" | sed 's/^/    /' >&2
     FAILURES=$((FAILURES + 1))
-  else
-    ok "nenhum caractere invisível (zero-width/bidi)"
   fi
 else
-  warn "não é um repositório git — varredura de caracteres invisíveis ignorada"
-  WARNINGS=$((WARNINGS + 1))
+  err "node ausente — não é possível verificar caracteres invisíveis"
+  FAILURES=$((FAILURES + 1))
 fi
 
-# 2d. Trava de segredo do próprio projeto, se existir.
+# 2d. Configuração do filtro de contexto (vibeguard.yaml) precisa ser válida.
+if node security/scripts/vibeguard.mjs --check >/dev/null 2>&1; then
+  ok "vibeguard.yaml: configuração válida"
+else
+  err "vibeguard.yaml inválido — rode 'node security/scripts/vibeguard.mjs --check'"
+  FAILURES=$((FAILURES + 1))
+fi
+
+# 2e. Trava de segredo do próprio projeto, se existir.
 if [[ -x "$ROOT/mutirao" ]]; then
   if "$ROOT/mutirao" guard scan >/dev/null 2>&1; then
     ok "mutirao guard scan: nenhum segredo"
@@ -132,33 +140,39 @@ fi
 
 step "3/5 Dependências (registro npm)"
 
-DEPS_VERIFIED=0
-if [[ -f package.json ]]; then
-  if ! command -v node >/dev/null 2>&1; then
-    err "node ausente — não é possível validar package.json"
-    FAILURES=$((FAILURES + 1))
-  else
-    mapfile -t DEPS < <(node -e '
-      const p = require("./package.json");
-      const deps = { ...(p.dependencies || {}), ...(p.devDependencies || {}) };
-      Object.keys(deps).forEach((name) => console.log(name));
-    ' 2>/dev/null)
+DEPS=()
 
-    if [[ "${#DEPS[@]}" -eq 0 ]]; then
-      ok "package.json sem dependências declaradas"
-    else
-      if node security/scripts/verify-deps.mjs "${DEPS[@]}"; then
-        ok "${#DEPS[@]} dependência(s) confirmadas no registro"
-        DEPS_VERIFIED="${#DEPS[@]}"
-      else
-        err "uma ou mais dependências não existem (ou não puderam ser verificadas) — NÃO instale"
-        FAILURES=$((FAILURES + 1))
-      fi
-    fi
-  fi
+# Fonte 1: package.json (se existir).
+if [[ -f package.json ]] && command -v node >/dev/null 2>&1; then
+  while IFS= read -r dep; do
+    [[ -n "$dep" ]] && DEPS+=("$dep")
+  done < <(node -e '
+    const p = require("./package.json");
+    const deps = { ...(p.dependencies || {}), ...(p.devDependencies || {}) };
+    Object.keys(deps).forEach((name) => console.log(name));
+  ' 2>/dev/null)
+fi
+
+# Fonte 2: security/deps.txt (uma dependência por linha, # comenta).
+if [[ -f security/deps.txt ]]; then
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    line="$(printf '%s' "$line" | tr -d '[:space:]')"
+    [[ -n "$line" ]] && DEPS+=("$line")
+  done < security/deps.txt
+fi
+
+DEPS_VERIFIED=0
+if [[ "${#DEPS[@]}" -eq 0 ]]; then
+  ok "nenhuma dependência declarada (package.json e security/deps.txt vazios)"
 else
-  warn "package.json ausente — nada para validar nesta etapa"
-  WARNINGS=$((WARNINGS + 1))
+  if node security/scripts/verify-deps.mjs "${DEPS[@]}"; then
+    ok "${#DEPS[@]} dependência(s) confirmadas no registro"
+    DEPS_VERIFIED="${#DEPS[@]}"
+  else
+    err "dependência inexistente ou não verificada — NÃO instale"
+    FAILURES=$((FAILURES + 1))
+  fi
 fi
 
 # ------------------------------------------------------------- 4. submódulos

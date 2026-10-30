@@ -1,6 +1,7 @@
-<!-- PROPÓSITO: visão geral da arquitetura do repositório base de vibecoding —
-     os pilares (segurança, economia de tokens, skills), a estrutura de pastas,
-     as ferramentas verificadas e o passo a passo de inicialização em 3 comandos. -->
+<!-- PROPÓSITO: porta de entrada do repositório. Primeiro ensina a usar o kit
+     colando o link no chat da IA (sem terminal); depois apresenta os pilares
+     (segurança, economia de tokens, skills), a estrutura e a inicialização local
+     em 3 comandos para quem vai trabalhar neste repositório. -->
 
 # Mutirão — base de vibecoding assistida por LLM
 
@@ -10,6 +11,33 @@ não estoura e capacidades reutilizáveis em vez de instruções coladas no chat
 
 Funciona com **DeepSeek Harness, Claude Code, Cursor, Codex e Gemini CLI** — todos
 leem o [`AGENTS.md`](AGENTS.md) deste repositório.
+
+---
+
+## Comece colando o link
+
+Não precisa clonar, instalar nada nem abrir terminal. **Copie o bloco abaixo e
+cole no chat da sua IA** (Claude, Codex, Cursor, Gemini, DeepSeek):
+
+```text
+Leia o START.md de https://github.com/Padecodigo/mutirao e configure
+este projeto com o Mutirão. Depois me pergunte o que eu quero construir.
+```
+
+A IA lê o [START.md](START.md) e faz **uma** pergunta: você quer **usar** o
+Mutirão para construir algo, ou **desenvolver** o próprio Mutirão? Da resposta
+sai o caminho, sem tutorial antes da hora.
+
+Só quer as regras (segurança, skills, tokens) e nada do fluxo de projeto? Cole:
+
+```text
+Leia https://raw.githubusercontent.com/Padecodigo/mutirao/main/AGENTS.md
+e siga estas regras neste projeto.
+```
+
+**Se você é uma IA lendo isto:** leia [START.md](START.md) e faça a pergunta de
+abertura — ou, se a pessoa já pediu "instale e configure", siga o roteiro
+"Instale e configure" de lá.
 
 ---
 
@@ -26,7 +54,10 @@ prepara o ambiente e [`scripts/sync.sh`](scripts/sync.sh) mantém tudo em dia.
 
 ---
 
-## Início rápido — 3 comandos
+## Início rápido — 3 comandos (para quem vai trabalhar neste repositório)
+
+Se você só quer **usar** o Mutirão no seu projeto, o caminho é o bloco acima.
+Se vai mexer **neste** repositório:
 
 ```bash
 bash scripts/setup.sh     # 1. valida Node/Git/Bash, cria pastas, marca scripts como executáveis

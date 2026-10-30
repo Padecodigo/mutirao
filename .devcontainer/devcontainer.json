@@ -4,6 +4,11 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
   "remoteUser": "node",
+  // Em hosts com SELinux (Fedora/RHEL) o bind mount fica invisível sem relabel:
+  // /workspace aparece vazio e os scripts citam arquivos inexistentes.
+  // Testado em Fedora 44 + Docker 29: sem esta opção, o sync falha com
+  // MODULE_NOT_FOUND; com ela, passa. Em macOS/Windows a opção é ignorada.
+  "runArgs": ["--security-opt", "label=disable"],
   "postCreateCommand": "git config --global --add safe.directory /workspace && bash scripts/setup.sh --hooks",
   "postStartCommand": "bash scripts/sync.sh || true",
   "customizations": {
